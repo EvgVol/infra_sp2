@@ -29,6 +29,7 @@ def username_me(value):
         )
     return value
 
+
 def validate_year(value):
     if value >= datetime.now().year:
         raise ValidationError(
