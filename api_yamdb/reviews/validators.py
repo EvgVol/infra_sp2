@@ -28,7 +28,6 @@ def username_me(value):
             'Имя пользователя "me" не разрешено.'
         )
     return value
-        
 
 def validate_year(value):
     if value >= datetime.now().year:
