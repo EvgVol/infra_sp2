@@ -9,9 +9,11 @@ services:
       - ./.env
 
   web:
-    build:
-      context: ../
-      dockerfile: api_yamdb/Dockerfile
+    build: ../api_yamdb/
+    command: >
+      sh -c "python manage.py collectstatic --noinput &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
     restart: always
     volumes:
       - static_value:/app/static/
