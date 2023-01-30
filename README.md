@@ -3,71 +3,37 @@ REST API проект для сервиса YaMDb — сбор отзывов о
 
 ## Описание
 
-Проект YaMDb собирает отзывы пользователей на произведения.
-Произведения делятся на категории: «Книги», «Фильмы», «Музыка».
-Список категорий  может быть расширен (например, можно добавить категорию «Изобразительное искусство» или «Ювелирка»).
-### Как запустить проект:
+API для получения информации и обсуждения наиболее интересных произведений.
+Для автоматизации развертывания на боевых серверах используется среда виртуализации Docker, а также Docker-compose - инструмент для запуска многоконтейнерных приложений.
 
-Все описанное ниже относится к ОС Linux.
-Клонируем репозиторий и переходим в него:
+## Стек технологий:
+- Python 3
+- DRF (Django REST framework)
+- Django ORM
+- Docker
+- Gunicorn
+- Nginx
+- Django 2.2 TLS
+- PostgreSQL
+- GIT
+
+## Установка
+##### Шаг 1. Проверьте установлен ли у вас Docker
+Прежде, чем приступать к работе, необходимо знать, что Docker установлен. Для этого достаточно ввести:
 ```bash
-git clone https://github.com/EvgVol/infra_sp2
-cd infra_sp2
-cd api_yamdb
+docker -v
 ```
+Или скачайте [Docker Desktop](https://www.docker.com/products/docker-desktop) для Mac или Windows. [Docker Compose](https://docs.docker.com/compose) будет установлен автоматически. В Linux убедитесь, что у вас установлена последняя версия [Compose](https://docs.docker.com/compose/install/). Также вы можете воспользоваться официальной [инструкцией](https://docs.docker.com/engine/install/).
 
-Создаем и активируем виртуальное окружение:
+##### Шаг 2. Клонируйте репозиторий себе на компьютер
+Введите команду:
 ```bash
-python3 -m venv venv
-source /venv/bin/activate (source /venv/Scripts/activate - для Windows)
-python -m pip install --upgrade pip
-```
-
-Ставим зависимости из requirements.txt:
-```bash
-pip install -r requirements.txt
-```
-
-Переходим в папку с файлом docker-compose.yaml:
-```bash
-cd infra
+git clone https://github.com/DenisSivko/infra_sp2.git
 ```
 
-Поднимаем контейнеры (infra_db_1, infra_web_1, infra_nginx_1):
+##### Шаг 3. Создайте в клонированной директории файл .env
+Пример:
 ```bash
-docker-compose up -d --build
-```
-
-Выполняем миграции:
-```bash
-docker-compose exec web python manage.py makemigrations reviews
-```
-```bash
-docker-compose exec web python manage.py migrate
-```
-
-Создаем суперпользователя:
-```bash
-docker-compose exec web python manage.py createsuperuser
-```
-
-Србираем статику:
-```bash
-docker-compose exec web python manage.py collectstatic --no-input
-```
-
-Создаем дамп базы данных (нет в текущем репозитории):
-```bash
-docker-compose exec web python manage.py dumpdata > dumpPostrgeSQL.json
-```
-
-Останавливаем контейнеры:
-```bash
-docker-compose down -v
-```
-
-### Шаблон наполнения .env (не включен в текущий репозиторий) расположенный по пути infra/.env
-```
 DB_ENGINE=django.db.backends.postgresql
 DB_NAME=postgres
 POSTGRES_USER=postgres
@@ -76,5 +42,55 @@ DB_HOST=db
 DB_PORT=5432
 ```
 
-### Документация API YaMDb
-Документация доступна по эндпойнту: http://localhost/redoc/
+##### Шаг 4. Запуск docker-compose
+Для запуска необходимо выполнить из директории с проектом команду:
+```bash
+docker-compose up -d
+```
+
+##### Шаг 5. База данных
+Создаем и применяем миграции:
+```bash
+docker-compose exec web python manage.py makemigrations --noinput
+docker-compose exec web python manage.py migrate --noinput
+```
+
+##### Шаг 6. Подгружаем статику
+Выполните команду:
+```bash
+docker-compose exec web python manage.py collectstatic --no-input 
+```
+
+##### Шаг 7. Заполнение базы тестовыми данными
+Для заполнения базы тестовыми данными вы можете использовать файл fixtures.json, который находится в infra_sp2. Выполните команду:
+```bash
+docker-compose exec web python manage.py loaddata fixtures.json
+```
+
+##### Другие команды
+Создание суперпользователя:
+```bash
+docker-compose exec web python manage.py createsuperuser
+```
+
+Остановить работу всех контейнеров можно командой:
+```bash
+docker-compose down
+```
+
+Для пересборки и запуска контейнеров воспользуйтесь командой:
+```bash
+docker-compose up -d --build 
+```
+
+Мониторинг запущенных контейнеров:
+```bash
+docker stats
+```
+
+Останавливаем и удаляем контейнеры, сети, тома и образы:
+```bash
+docker-compose down -v
+```
+
+##Документация к API доступна по адресу `http://127.0.0.1/redoc/`
