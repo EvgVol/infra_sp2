@@ -3,8 +3,8 @@ from datetime import datetime
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from reviews.models import (username_me, Category, Comment,
-                            Genre, Review, Title, User)
+from reviews.models import (Category, Comment, Genre, Review, Title, User,
+                            username_me)
 from reviews.validators import UsernameRegexValidator
 
 
